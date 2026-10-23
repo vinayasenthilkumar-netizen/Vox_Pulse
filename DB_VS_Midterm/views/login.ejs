@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Page title shown in browser tab -->
+  <title>Organiser Login</title>
+  <!-- Link to main stylesheet (Bootstrap + custom overrides) -->
+  <link rel="stylesheet" href="/main.css">
+</head>
+<body class="login-page">
+
+  <!-- semi transparent overlay behind login card -->
+  <div class="overlay"></div>
+
+  <!-- Centered login form container filling full viewport height ( alternative of pixels ) -->
+  <div class="container vh-100 d-flex align-items-center justify-content-center login-container">
+    <div class="card login-card shadow-lg">
+      <!-- Card header with form title -->
+      <div class="card-header text-center">
+        <h3>Organiser Login</h3>
+      </div>
+      <div class="card-body">
+        <!-- Error alert shown only if login failed -->
+        <% if (error) { %>
+          <div class="alert alert-danger bg-danger bg-opacity-75 text-white border-0" role="alert">
+            <%= error %>
+          </div>
+        <% } %>
+
+        <!-- Login form posts password to server -->
+        <form action="/organiser/login" method="POST" novalidate>
+          <div class="mb-3">
+            <!-- Password input field -->
+            <label for="password" class="form-label">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="form-control"
+              placeholder="Enter password"
+              required
+              autofocus
+            >
+          </div>
+          <!-- login button -->
+          <button type="submit" class="btn btn-primary w-100 py-2">Login</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS bundle for any interactive features -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

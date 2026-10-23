@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <!-- Main stylesheet, includes Bootstrap and any custom styles -->
+  <link rel="stylesheet" href="/main.css"/>
+  <!-- Dynamic page title: event name plus site name -->
+  <title><%= event.title %> • <%= name %></title>
+</head>
+<body class="attendee-event-page">
+
+<!-- ================================
+Site Heading section
+Shows overall site info and context
+================================= -->
+
+  <header>
+    <!-- Static page heading -->
+    <h1>Event Details</h1>
+    <!-- Site name pulled from settings -->
+    <h2><%= name %></h2>
+    <!-- Site description from settings -->
+    <p><%= description %></p>
+  </header>
+
+<!-- ================================
+Event Information
+Displays details about the selected event
+================================= -->
+
+  <section class="attendee-event">
+    <!-- Event title -->
+    <h2><%= event.title %></h2>
+    <!-- Formatted start and end dates -->
+    <small>Start Date: <%= new Date(event.event_date).toLocaleDateString() %></small>
+    <small>End Date: <%= new Date(event.event_end).toLocaleDateString() %></small>
+    <!-- Event description text -->
+    <p><%= event.description %></p>
+
+<!-- ================================
+Ticket Booking Form
+Allows user to choose ticket quantities and enter personal info
+================================= -->
+
+    <form action="/attendee/events/<%= event.id %>/book" method="POST">
+      <!-- Embed pricing and availability data for JS to use -->
+      <div class="tickets"
+           data-child-price="<%= event.child_price_price %>"
+           data-adult-price="<%= event.adult_price %>"
+           data-child-price-available="<%= event.child_price_quantity %>"
+           data-adult-available="<%= event.adult_quantity %>">
+
+        <!-- Child tickets section -->
+        <p>
+          <strong>Child Tickets Available:</strong>
+          <span id="childPriceAvailable"><%= event.child_price_quantity %></span>
+        </p>
+        <div class="form-group">
+          <label for="childPriceTickets">
+            Number of Child Tickets (Price: $<%= event.child_price_price %>)
+          </label>
+          <!-- Input capped to available tickets -->
+          <input type="number"
+                 id="childPriceTickets"
+                 name="child_price_quantity"
+                 min="0"
+                 value="0"
+                 required>
+        </div>
+
+        <!-- Adult tickets section -->
+        <p>
+          <strong>Adult Tickets Available:</strong>
+          <span id="adultAvailable"><%= event.adult_quantity %></span>
+        </p>
+        <div class="form-group">
+          <label for="adultTickets">
+            Number of Adult Tickets (Price: $<%= event.adult_price %>)
+          </label>
+          <input type="number"
+                 id="adultTickets"
+                 name="adult_quantity"
+                 min="0"
+                 value="0"
+                 required>
+        </div>
+
+        <!-- Attendee personal details -->
+        <div class="form-group">
+          <label for="attendeeName">Your Name</label>
+          <input type="text"
+                 id="attendeeName"
+                 name="attendee_name"
+                 placeholder="Enter your name"
+                 required>
+        </div>
+        <div class="form-group">
+          <label for="attendeeEmail">Your Email</label>
+          <input type="email"
+                 id="attendeeEmail"
+                 name="attendee_email"
+                 placeholder="Enter your email"
+                 required>
+        </div>
+
+        <!-- Display total price -->
+        <div class="total-price">
+          <p>
+            <strong>Total Price:</strong>
+            <span id="totalPrice">0.00</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Submit button to confirm booking -->
+      <button type="submit" class="book-btn">Book Tickets</button>
+    </form>
+  </section>
+
+<!-- ================================
+Navigation
+Link to go back to events overview
+================================= -->
+
+  <a href="/attendee" class="back-link">&larr; Back to Events</a>
+
+  <!-- Bootstrap JS for interactive components -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    // Take the  Document Object Model elements and pricing/availability data ( DOM represets HTML and connect web pages to scripts allowing to acces the content of the document  )
+    const childInput = document.getElementById('childPriceTickets');
+    const adultInput = document.getElementById('adultTickets');
+    const totalEl    = document.getElementById('totalPrice');
+    const availChild = document.getElementById('childPriceAvailable'); 
+    const availAdult = document.getElementById('adultAvailable');
+    const container  = document.querySelector('.tickets'); // finds the first class name with ticket to put in the values
+
+    // Parse data attributes for use in calculations
+    const childPrice = parseFloat(container.dataset.childPrice);
+    const adultPrice = parseFloat(container.dataset.adultPrice);
+    let childAvail   = parseInt(container.dataset.childPriceAvailable);
+    let adultAvail   = parseInt(container.dataset.adultAvailable);
+
+    // Recalculate totals and remaining availability on input change
+    function updateTotal() {
+
+      // Ensures user cannot exceed available tickets
+      let cQty = Math.min(parseInt(childInput.value) || 0, childAvail);
+      let aQty = Math.min(parseInt(adultInput.value) || 0, adultAvail);
+
+      childInput.value = cQty;
+      adultInput.value = aQty;
+
+      // Update total price display
+      totalEl.textContent = (cQty * childPrice + aQty * adultPrice).toFixed(2);
+      // Show remaining tickets
+      availChild.textContent = childAvail - cQty;
+      availAdult.textContent = adultAvail - aQty;
+    }
+
+    // Chnage total value if there are chnages in the user input quantity
+    childInput.addEventListener('input', updateTotal);
+    adultInput.addEventListener('input', updateTotal);
+    updateTotal();
+  </script>
+</body>
+</html>

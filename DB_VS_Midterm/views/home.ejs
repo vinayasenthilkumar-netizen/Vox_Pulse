@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <!-- Main stylesheet (includes Bootstrap & custom rules) -->
+  <link rel="stylesheet" href="/main.css"/>
+  <!-- Page title showing site name -->
+  <title>Event Manager ৹ <%= name %></title>
+</head>
+<body class="home-page">
+  <!-- Semi transparent overlay for the background effect -->
+  <div class="overlay"></div>
+
+<!-- ================================
+Navbar
+Displays site title and optional description
+================================= -->
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-transparent">
+    <div class="container">
+      <!-- Site name and description  -->
+      <div class="d-flex flex-column">
+        <a class="navbar-brand display-5 mb-0"><%= name %></a>
+        <% if (description) { %>
+          <small class="navbar-text text-light"><%= description %></small>
+        <% } %>
+      </div>
+    </div>
+  </nav>
+  
+<!-- ================================
+Carousel ( the slides )
+Rotating of upcoming events or fallback message
+================================= -->
+
+  <div id="musicCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+      <% if (slides && slides.length) { slides.forEach((slide, i) => { %>
+        <!-- Each slide shows title and date -->
+        <div class="carousel-item <%= i === 0 ? 'active' : '' %>">
+          <div class="d-flex h-100 align-items-center justify-content-center text-center">
+            <div class="carousel-caption text-white rounded p-4">
+              <h3 class="fw-semibold"><%= slide.title %></h3>
+              <span class="text-light fs-5">
+                <%= new Date(slide.event_date)
+                     .toLocaleDateString('en-US',{ month:'short', day:'numeric' }) %>
+              </span>
+            </div>
+          </div>
+        </div>
+      <% }) } else { %>
+        <!-- Fallback when no events are available -->
+        <div class="carousel-item active">
+          <div class="d-flex h-100 align-items-center justify-content-center text-center">
+            <div class="carousel-caption text-white rounded p-4">
+              <h3 class="fw-semibold">No Upcoming Events</h3>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    </div>
+    <!-- Carousel ( slide ) navigation ( previous and next ) -->
+    <button class="carousel-control-prev" type="button"
+            data-bs-target="#musicCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button"
+            data-bs-target="#musicCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+
+  <!-- separate carousel from content -->
+  <div class="cards-spacer"></div>
+
+<!-- ================================
+Portal cards
+links for organisers and attendees
+================================= -->
+  <section class="container py-5">
+    <div class="row justify-content-center g-5">
+      
+      <!-- Organiser panel -->
+      <div class="col-sm-10 col-md-6">
+        <div class="card h-100 shadow-lg border-0 text-white panel-card-info">
+          <div class="card-body d-flex flex-column">
+            <h4 class="card-title text-info mb-3">Organiser Portal</h4>
+            <p class="card-text flex-grow-1 fs-5">
+              Create, edit, and publish your music events here.
+            </p>
+            <a href="/organiser"
+               class="btn btn-info mt-3 align-self-center px-5 py-2 fw-semibold rounded-pill">
+              Manage Events
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Attendee panel -->
+      <div class="col-sm-10 col-md-6">
+        <div class="card h-100 shadow-lg border-0 text-white panel-card-warning">
+          <div class="card-body d-flex flex-column">
+            <h4 class="card-title text-warning mb-3">Attendee Portal</h4>
+            <p class="card-text flex-grow-1 fs-5">
+              Browse upcoming music events and book your spot.
+            </p>
+            <a href="/attendee"
+               class="btn btn-warning mt-3 align-self-center px-5 py-2 fw-semibold rounded-pill">
+              View Events
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Bootstrap JS for carousel, modal, etc. -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

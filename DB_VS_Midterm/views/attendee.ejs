@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <!-- Link to your main stylesheet (includes Bootstrap & custom rules) -->
+  <link rel="stylesheet" href="/main.css"/>
+  <!-- Dynamic page title which shows Attendee Home and site name and description -->
+  <title>Attendee Home • <%= name %></title>
+</head>
+<body class="attendee-page">
+
+<!-- ================================
+Navbar
+Site navigation with back to Home page 
+================================= -->
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <!-- Navigation bar text -->
+      <a class="navbar-brand display-5">Event Booking Page</a>
+      <!-- Button -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <!-- Collapsible menu items -->
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto">
+          <!-- Back to home page link for organisers/attendees -->
+          <li class="nav-item">
+            <a class="nav-link" href="/">← Home Page</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+<!-- ================================
+Site Header
+Display site name, description, and a brief tagline
+================================= -->
+
+  <header class="text-start my-5 ms-5">
+    <!-- Site name -->
+    <h1 class="fw-bold ms-4"><%= name %></h1>
+    <!-- Site description -->
+    <h5 class="fw-bold ms-4"><%= description %></h5>
+    <!-- Static tagline for attendee page -->
+    <p class="text-dark ms-4">Explore upcoming music events and book your spot.</p>
+  </header>
+
+<!-- ================================
+Main Content: Event grids
+Shows a card for each upcoming event, or a warning if none
+================================= -->
+
+  <main class="container mb-5">
+    <div class="row g-4">
+      <% if (events.length) { %>
+        <!-- Loop over each event and render a card (its own event card) -->
+        <% events.forEach(evt => { %>
+          <div class="col-sm-12 col-md-6 col-lg-4">
+            <div class="card h-100 shadow-lg bg-dark text-light border-0 attendee-card">
+              <div class="card-body d-flex flex-column">
+                <!-- Event title -->
+                <h5 class="card-title"><%= evt.title %></h5>
+                <!-- Event date in this formate : Mon DD, YYYY -->
+                <p class="card-text text-light flex-grow-1">
+                  <i class="bi bi-calendar-event"></i>
+                  <%= new Date(evt.event_date)
+                        .toLocaleDateString('en-US', {
+                          month: 'short',
+                          day:   'numeric',
+                          year:  'numeric'
+                        }) %>
+                </p>
+                <!-- Link to view detailed page for this event -->
+                <a href="/attendee/events/<%= evt.id %>" class="btn btn-pink mt-auto">
+                  View Details
+                </a>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <!-- Fallback when there are no upcoming events -->
+        <div class="col-12">
+          <div class="alert alert-warning text-center">
+            <em>No upcoming events at the moment.</em>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </main>
+
+  <!-- Bootstrap JS bundle for interactive components (collapse, toggler, etc.) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

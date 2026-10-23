@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Load main stylesheet (includes Bootstrap and project-specific rules) -->
+  <link rel="stylesheet" href="/main.css">
+  <!-- Page title shows view bookings page and the site name -->
+  <title>View Bookings • <%= name %></title>
+</head>
+<body class="view-bookings-page">
+
+<!-- =========================
+Page Header
+Shows the heading and a back button linking to the organiser page
+========================= -->
+  <header class="view-bookings-header my-4">
+    <div class="container d-flex justify-content-between align-items-center">
+      <h1 class="text-light mb-0 ms-5">View Bookings</h1>
+      <a href="/organiser" class="btn btn-pink btn-back mb-0">
+        <i class="bi bi-arrow-left-circle"></i> ← Back
+      </a>
+    </div>
+  </header>
+
+<!-- =========================
+Event Fliter Dropdown
+Builds a list of event titles to help find the specific bookings
+========================= -->
+
+  <div class="container mb-4 text-center">
+    <% 
+      // Collect unique event titles for the filter menu
+      const titles = [];
+      bookings.forEach(b => {
+        if (!titles.includes(b.title)) titles.push(b.title);
+      });
+    %>
+    <select id="eventFilter" class="form-select w-auto mx-auto">
+      <option value="">All Events</option>
+      <% titles.forEach(title => { %>
+        <option value="<%= title %>"><%= title %></option>
+      <% }) %>
+    </select>
+  </div>
+
+<!-- =========================
+Bookings
+Display one card per booking, or a warning if none exist
+========================= -->
+  <div class="container">
+    <div class="row justify-content-start">
+      <% if (bookings.length) { %>
+        <% bookings.forEach(booking => { %>
+          <!-- Each booking card has summary information and an accordion for ticket details -->
+          <div class="col-sm-10 col-md-4 col-lg-4 mb-3 booking-card" data-title="<%= booking.title %>">
+            <div class="card shadow-lg bg-dark text-light rounded-lg">
+              
+              <!-- Event title and booking ID -->
+              <div class="card-header text-center bg-info">
+                <h5 class="card-title mb-1"><%= booking.title %></h5>
+                <small class="text-light">ID: <%= booking.booking_id %></small>
+              </div>
+              
+              <!-- Attendee name, email, dates, total cost -->
+              <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-light">Attendee: <%= booking.user_name %></h6>
+                <p><strong>Email:</strong> <%= booking.email_address %></p>
+                <p><strong>Dates:</strong> <%= booking.start_date %> &mdash; <%= booking.end_date %></p>
+                <p><strong>Total:</strong> $<%= booking.tprice %></p>
+                
+                <!-- Accordion ( drop down ) to show the breakdown of the child and adult tickets -->
+                <div class="accordion mt-3" id="acc<%= booking.id %>">
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="head<%= booking.id %>">
+                      <button
+                        class="accordion-button collapsed"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#coll<%= booking.id %>"
+                        aria-expanded="false"
+                        aria-controls="coll<%= booking.id %>"
+                      >
+                        Ticket Details
+                      </button>
+                    </h2>
+                    <div
+                      id="coll<%= booking.id %>"
+                      class="accordion-collapse collapse"
+                      aria-labelledby="head<%= booking.id %>"
+                      data-bs-parent="#acc<%= booking.id %>"
+                    >
+                      <div class="accordion-body">
+                        <p><strong>Child:</strong> <%= booking.childquantity %> x <%= booking.childticket_type %> ($<%= booking.child_price_price.toFixed(2) %>)</p>
+                        <p><strong>Adult:</strong> <%= booking.adultquantity %> x <%= booking.adultticket_type %> ($<%= booking.adult_price.toFixed(2) %>)</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- date the booking was made -->
+              <div class="card-footer text-center text-light">
+                <small>Booked on <%= booking.booking_date %></small>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <!-- Display if there are no bookings to show -->
+        <div class="col-12">
+          <div class="alert alert-warning text-center" role="alert">
+            <em>No bookings found.</em>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+<!-- =========================
+Filter Script
+Shows event cards based on the selected event title
+========================= -->
+  <script>
+    document.getElementById('eventFilter').addEventListener('change', e => {
+      const filter = e.target.value;
+      document.querySelectorAll('.booking-card').forEach(card =>
+        card.classList.toggle('d-none', filter && card.dataset.title !== filter)
+      );
+    });
+  </script>
+  
+  <!-- Bootstrap’s JS bundle for accordion, collapse, etc. -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
